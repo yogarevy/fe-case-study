@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
+    <link rel="stylesheet" type="text/css" href="../assets/bootstrap/css/bootstrap.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="../assets/custom/css/custom.css" media="all">
+    <link rel="stylesheet" type="text/css" href="../assets/custom/css/preloader.css" media="all">
+    <link rel="stylesheet" type="text/css" href="../assets/fontawesome/css/all.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="../assets/fontawesome/css/brands.min.css" media="all">
+    <link rel="stylesheet" type="text/css" href="../assets/custom/css/technology-icons.css" media="all">
+    <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" media="all">
+<!--    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.7/css/rowReorder.dataTables.min.css" media="all">-->
+<!--    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.7/css/responsive.dataTables.min.css" media="all">-->
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+
+    <title>KOMPLEK PANGHEGAR</title>
+</head>
+<body>
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="/"><strong>KOMPLEK PANGHEGAR</strong></a>
+<!--    <ul class="navbar-nav">-->
+<!--        <li class="nav-item">-->
+<!--            <a class="nav-link" href="#">Home</a>-->
+<!--        </li>-->
+<!--    </ul>-->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#nav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav bg-light m-0 ml-lg-auto p-3 p-lg-0">
+            <li class="d-inline d-lg-none">
+                <button data-toggle="collapse" data-target="#nav" class="close float-right">&times;</button>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    User
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Profile</a>
+                    <a class="dropdown-item" href="#">Sign Out</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- END NAVBAR -->
+
+<!-- PRELOADER -->
+<!--<div class="preloader-wrapper">-->
+<!--    <div class="preloader">-->
+<!--        <img src="../assets/images/preloader/preloader-one.gif" alt="Preloader">-->
+<!--    </div>-->
+<!--</div>-->
+<!-- END PRELOADER -->
+
+<!-- BODY -->
+<div id="app" class="container">
+    <div class="row my-5">
+        <div class="col-md-12">
+            <h1>Bantuan Warga</h1>
+            <div>
+                <div class="alert alert-success alert-dismissible fade show" role="alert" v-if="errors === false">
+                    <strong>Berhasil!</strong> data berhasil ditambahkan.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" v-if="errors === true">
+                    <strong>Gagal!</strong> Internal Server Error.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="card">
+                    <h5 class="card-header">Data Warga
+                        <div class="float-right">
+                            <button class="btn btn-sm btn-primary" v-on:click="isHidden = !isHidden"><i class="fas fa-plus"></i> Tambah Data</button>
+                        </div>
+                    </h5>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="table-warga" class="table display nowrap" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">NIK</th>
+                                        <th scope="col">NAMA</th>
+                                        <th scope="col">UMUR</th>
+                                        <th scope="col">NOMOR KK</th>
+                                        <th scope="col">RT</th>
+                                        <th scope="col">RW</th>
+                                        <th scope="col">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="row in rows">
+                                        <td>{{row.nik}}</td>
+                                        <td>{{row.name}}</td>
+                                        <td>{{row.age}}</td>
+                                        <td>{{row.no_kk}}</td>
+                                        <td>{{row.rt}}</td>
+                                        <td>{{row.rw}}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-success" v-on:click="detail($event, row)"><i class="fas fa-eye"></i></button>
+                                            <button class="btn btn-sm btn-danger" v-on:click="removeData(row)"><i class="fas fa-trash-alt"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Tambah Data-->
+        <transition name="slide-fade">
+            <div v-if="!isHidden" class="bottom-card">
+                <div class="custom-card">
+                    <div class="card-body row">
+                        <div class="col-sm-12 d-flex justify-content-end">
+                            <button type="button" id="close-bottom-card" class="close" aria-label="Close" v-on:click="isHidden = true">
+                                <span aria-hidden="true"><i class="fas fa-times-circle"></i></span>
+                            </button>
+                        </div>
+                        <div class="col-sm-12"><h5 class="title-card"><strong>Tambah Data Warga</strong></h5></div>
+                        <div class="col-md-12 scrollable">
+                            <form name="add-form" method="post" action="" v-on:submit.prevent="addDataWarga">
+                                <div class="form-group">
+                                    <label class="label-input">Nama<span style="color: red;">*</span></label>
+                                    <input type="text" class="form-control" v-model="nameInput" ref="nameInput" v-bind:class="{'is-invalid': hasErrorName}" placeholder="Nama">
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-input">NIK<span style="color: red;">*</span></label>
+                                    <input type="number" min="0" class="form-control" v-model="nikInput" ref="nikInput" v-bind:class="{'is-invalid': hasErrorNik}" placeholder="NIK" @keydown="filterKey" @input="filterInput">
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-input">Nomor Kartu Keluarga<span style="color: red;">*</span></label>
+                                    <input type="number" min="0" class="form-control" v-model="noKkInput" ref="noKkInput" v-bind:class="{'is-invalid': hasErrorNoKK}" placeholder="Nomor Kartu Keluarga" @keydown="filterKey" @input="filterInput">
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-input">Foto KTP<span style="color: red;">*</span></label>
+                                    <input type="file" class="form-control-file label-input" ref="fotoKtpInput">
+                                    <span style="color: red;">{{ktp_msg}}</span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-input">Foto Kartu Keluarga<span style="color: red;">*</span></label>
+                                    <input type="file" class="form-control-file label-input" ref="fotoKkInput">
+                                    <span style="color: red;">{{kk_msg}}</span>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <label class="label-input">Umur<span style="color: red;">*</span></label>
+                                            <input type="number" min="0" class="form-control" v-model="umurInput" ref="umurInput" v-bind:class="{'is-invalid': hasErrorUmur}" placeholder="Umur" @keydown="filterKey" @input="filterInput">
+                                        </div>
+                                        <div class="col-8">
+                                            <label class="label-input">Jenis Kelamin<span style="color: red;">*</span></label>
+                                            <select class="form-control" v-model="genderInput" ref="genderInput" v-bind:class="{'is-invalid': hasErrorGender}">
+                                                <option disabled value="">-- Pilih Jenis Kelamin --</option>
+                                                <option value="laki-laki">Laki-laki</option>
+                                                <option value="perempuan">Perempuan</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-input">Alamat<span style="color: red;">*</span></label>
+                                    <textarea type="text" class="form-control" v-model="alamatInput" ref="alamatInput" v-bind:class="{'is-invalid': hasErrorAlamat}" placeholder="Alamat"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col">
+                                            <label class="label-input">RT<span style="color: red;">*</span></label>
+                                            <input type="number" min="0" class="form-control" v-model="rtInput" ref="rtInput" v-bind:class="{'is-invalid': hasErrorRt}" placeholder="RT" @keydown="filterKey" @input="filterInput">
+                                        </div>
+                                        <div class="col">
+                                            <label class="label-input">RW<span style="color: red;">*</span></label>
+                                            <input type="number" min="0" class="form-control" v-model="rwInput" ref="rwInput" v-bind:class="{'is-invalid': hasErrorRw}" placeholder="RW" @keydown="filterKey" @input="filterInput">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-input">Penghasilan sebelum pandemi<span style="color: red;">*</span></label>
+                                    <money class="form-control" v-model="pSebelumPandemiInput" ref="pSebelumPandemiInput" v-bind:class="{'is-invalid': hasErrorSebPan}" v-bind="money"></money>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-input">Penghasilan setelah pandemi<span style="color: red;">*</span></label>
+                                    <money class="form-control" v-model="pSetelahPandemiInput" ref="pSetelahPandemiInput" v-bind:class="{'is-invalid': hasErrorSetPan}" v-bind="money"></money>
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-input">Alasan membutuhkan bantuan<span style="color: red;">* {{alasan_msg}}</span></label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="alasan" id="hilang_pekerjaan" value="hilang_pekerjaan" v-model="alasanPilih">
+                                        <label class="form-check-label label-input" for="hilang_pekerjaan">
+                                            Kehilangan pekerjaan
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="alasan" id="korban_covid" value="korban_covid" v-model="alasanPilih">
+                                        <label class="form-check-label label-input" for="korban_covid">
+                                            Kepala keluarga terdampak atau korban Covid
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="alasan" id="fakir_sebelum_covid" value="fakir_sebelum_covid" v-model="alasanPilih">
+                                        <label class="form-check-label label-input" for="fakir_sebelum_covid">
+                                            Tergolong fakir/miskin semenjak sebelum Covid
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="alasan" id="lainnya" value="lainnya" v-model="alasanPilih">
+                                        <label class="form-check-label label-input" for="lainnya">
+                                            Lainnya
+                                        </label>
+                                    </div>
+                                    <div v-if="alasanPilih === 'lainnya'">
+                                        <input type="text" class="form-control" id="alasan_lainnya" v-model="lainnya" placeholder="Lainnya">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <span style="color: red;">*<i>Required</i> (Harus diisi).</span>
+                                </div>
+                                <div class="form-group submit-form">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="toc" v-model='toc'>
+                                        <label class="form-check-label label-input" for="toc">
+                                            Saya menyatakan bahwa data yang diisikan adalah benar dan siap mempertanggungjawabkan apabila ditemukan ketidaksesuaian dalam data tersebut.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary" :disabled='isDisabled'><i class="fas fa-save"></i> Simpan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!--Detail Data-->
+        <transition name="slide-fade">
+            <div v-if="!isHiddenDetail" class="bottom-card">
+                <div class="custom-card">
+                    <div class="card-body row">
+                        <div class="col-sm-12 d-flex justify-content-end">
+                            <button type="button" id="close-bottom-card-detail" class="close" aria-label="Close" v-on:click="isHiddenDetail = true">
+                                <span aria-hidden="true"><i class="fas fa-times-circle"></i></span>
+                            </button>
+                        </div>
+                        <div class="col-sm-12"><h5 class="title-card"><strong>Detail Data Warga</strong></h5></div>
+                        <div class="col-md-12 scrollable">
+                            <table class="table table-striped table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td>NIK</td>
+                                        <td>{{ nik }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nama</td>
+                                        <td>{{ nama }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nomor Kartu Keluarga</td>
+                                        <td>{{ no_kk }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Foto KTP</td>
+                                        <td>{{ foto_ktp }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Foto KK</td>
+                                        <td>{{ foto_kk }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Umur</td>
+                                        <td>{{ age }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jenis Kelamin</td>
+                                        <td>{{ gender }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Alamat</td>
+                                        <td>{{ address }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>RT</td>
+                                        <td>{{ rt }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>RW</td>
+                                        <td>{{ rw }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Penghasilan sebelum pandemi</td>
+                                        <td>{{ income_before | currency }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Penghasilan setelah pandemi</td>
+                                        <td>{{ income_after | currency }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Alasan membutuhkan bantuan</td>
+                                        <td>{{ reason }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </div>
+</div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="../assets/jquery/jquery-3.5.1.min.js"></script>
+    <script src="../assets/popper/popper.min.js"></script>
+    <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://rawgit.com/vuejs-tips/v-money/master/dist/v-money.js"></script>
+    <script src="../assets/custom/js/custom.js"></script>
+    <script src="http://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/accounting.js/0.4.1/accounting.min.js"></script>
+<!--    <script src="https://cdn.datatables.net/rowreorder/1.2.7/js/dataTables.rowReorder.min.js"></script>-->
+<!--    <script src="https://cdn.datatables.net/responsive/2.2.7/js/dataTables.responsive.min.js"></script>-->
+    <script src="../assets/custom/js/preloader.js"></script>
+</body>
+</html>
